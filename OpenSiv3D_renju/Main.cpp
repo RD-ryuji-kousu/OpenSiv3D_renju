@@ -250,6 +250,7 @@ public:
 		}
 		return false;
 	}
+
 	/*@brief 隣接、もしくは連続した石の隣接している物が空白、多色の石、壁かを調べる
 	* @param[in]	count	適用する石の並び
 	* @param[in]	px		中心となる座標のインデックスx
