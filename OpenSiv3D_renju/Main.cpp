@@ -262,10 +262,12 @@ public:
 		//与えられた座標下方向に壁もしくは多色の石があるかを検索
 		if (di == 0) {
 			for (int y = 0; y < count[1]; y++) {
-				if (board[py + y + 1][px] != c && py + y + 1 < 15) {
-					return board[py + y + 1][px];
+				if (py + y + 1 < 15) {
+					if (board[py + y + 1][px] != c) {
+						return board[py + y + 1][px];
+					}
 				}
-				if (py + y + 1 > 14) {
+				else  {
 					return SquareState::wall;
 				}
 			}
@@ -273,10 +275,12 @@ public:
 		//上方向に検索
 		if (di == 1) {
 			for (int y = 0; y < count[1]; y++) {
-				if (board[py - (y + 1)][px] != c && py - (y + 1) >= 0) {
-					return board[py - (y + 1)][px];
+				if (py - (y + 1) >= 0) {
+					if (board[py - (y + 1)][px] != c) {
+						return board[py - (y + 1)][px];
+					}
 				}
-				if (py - (y + 1) < 0) {
+				else {
 					return SquareState::wall;
 				}
 			}
@@ -284,10 +288,12 @@ public:
 		//右方向に検索
 		if (di == 2) {
 			for (int x = 0; x < count[3]; x++) {
-				if (board[py][px + (x + 1)] != c && px + x + 1 < 15) {
-					return board[py][px + (x + 1)];
+				if (px + x + 1 < 15) {
+					if (board[py][px + (x + 1)] != c) {
+						return board[py][px + (x + 1)];
+					}
 				}
-				if (px + x + 1 > 14) {
+				else {
 					return SquareState::wall;
 				}
 			}
@@ -295,10 +301,12 @@ public:
 		//左方向に検索
 		if (di == 3) {
 			for (int x = 0; x < count[3]; x++) {
-				if (board[py][px - (x + 1)] != c && px - (x + 1) >= 0) {
-					return board[py][px - (x + 1)];
+				if (px - (x + 1) >= 0) {
+					if (board[py][px - (x + 1)] != c) {
+						return board[py][px - (x + 1)];
+					}
 				}
-				if (px - (x + 1) < 0) {
+				else {
 					return SquareState::wall;
 				}
 			}
@@ -306,10 +314,12 @@ public:
 		//左上方向に検索
 		if (di == 4) {
 			for (int x = 0, y = 0; (x < count[0] && y < count[0]); x++, y++) {
-				if (board[py - (y + 1)][px - (x + 1)] != c && py - (y + 1) >= 0 && px - (x + 1) >= 0) {
-					return board[py - (y + 1)][px - (x + 1)];
+				if (py - (y + 1) >= 0 && px - (x + 1) >= 0) {
+					if (board[py - (y + 1)][px - (x + 1)] != c) {
+						return board[py - (y + 1)][px - (x + 1)];
+					}
 				}
-				if (py - (y + 1) < 0 || px - (x + 1) < 0) {
+				else {
 					return SquareState::wall;
 				}
 			}
@@ -317,10 +327,12 @@ public:
 		//右下方向に検索
 		if (di == 5) {
 			for (int x = 0, y = 0; (x < count[0] && y < count[0]); x++, y++) {
-				if (board[py + (y + 1)][px + (x + 1)] != c && py + (y + 1) < 15 && px + x + 1 < 15) {
-					return board[py + (y + 1)][px + (x + 1)];
+				if (py + (y + 1) < 15 && px + x + 1 < 15) {
+					if (board[py + (y + 1)][px + (x + 1)] != c) {
+						return board[py + (y + 1)][px + (x + 1)];
+					}
 				}
-				if (py + (y + 1) > 14 || px + x + 1 > 14) {
+				else {
 					return SquareState::wall;
 				}
 			}
@@ -328,10 +340,12 @@ public:
 		//右上方向に検索
 		if (di == 6) {
 			for (int x = 0, y = 0; (x < count[2] && y < count[2]); x++, y++) {
-				if (board[py - (y + 1)][px + (x + 1)] != c && py - (y - 1) >= 0 && px + x + 1 < 15) {
-					return board[py - (y + 1)][px + (x + 1)];
+				if (py - (y - 1) >= 0 && px + x + 1 < 15) {
+					if (board[py - (y + 1)][px + (x + 1)] != c) {
+						return board[py - (y + 1)][px + (x + 1)];
+					}
 				}
-				if (py - (y - 1) > 0 || px + x + 1 > 14) {
+				else {
 					return SquareState::wall;
 				}
 			}
@@ -339,10 +353,12 @@ public:
 		//左下方向に検索
 		if (di == 7) {
 			for (int x = 0,  y = 0; (x < count[2] && y < count[2]); x++, y++) {
-				if (board[py + (y + 1)][px - (x + 1)] != c && py + y + 1 < 15 || px - (x + 1) >= 0) {
-					return board[py + (y + 1)][px - (x + 1)];
+				if (py + y + 1 < 15 || px - (x + 1) >= 0) {
+					if (board[py + (y + 1)][px - (x + 1)] != c) {
+						return board[py + (y + 1)][px - (x + 1)];
+					}
 				}
-				if (py + y + 1 > 14 || px - (x + 1) < 0) {
+				else {
 					return SquareState::wall;
 				}
 			}
