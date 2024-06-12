@@ -56,8 +56,8 @@ class Board {
 public:
 	void Draw() {
 		board.draw(Palette::Burlywood);
-		for (double y = 0; y < 15; y++) {
-			for (double x = 0; x < 15; x++) {
+		for (int y = 0; y < 15; y++) {
+			for (int x = 0; x < 15; x++) {
 				Line{ board.x + x * LINE_STEP + BORDER_SPACE, board.y + y * LINE_STEP + BORDER_SPACE,
 					board.rightX() - BORDER_SPACE,board.y + y * LINE_STEP + BORDER_SPACE}.draw(Palette::Black);
 				Line{ board.x + x * LINE_STEP + BORDER_SPACE, board.y + y * LINE_STEP + BORDER_SPACE,
