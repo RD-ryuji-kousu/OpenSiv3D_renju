@@ -9,6 +9,7 @@
 enum class SquareState :unsigned char {
 	wall, space, black, white
 };
+constexpr int MUST_PUT_RATE = 100000;
 
 //盤上の線の定数
 constexpr double LINE_STEP = 38.0;
@@ -256,7 +257,7 @@ public:
 	* @param[in]	count	適用する石の並び
 	* @param[in]	px		中心となる座標のインデックスx
 	* @param[in]	py		中心となる座標のインデックスy
-	* @param[in]	di		調べる方向を決める基準di;
+	* @param[in]	di		調べる方向を決める基準di 調べる方向を決める基準(0=上下, 2=左右, 4=左上-右下, 6=右上-左下)
 	* @return SquareState	隣接しているもののステータスを返す
 	*/
 	SquareState OtherChk(SquareState c, const int(&count)[4], int px, int py, int di)const {
@@ -603,6 +604,35 @@ public:
 					}
 				}
 			}
+			if (level == 0) {
+				for (int i = 0; i < 4; i++) {
+					if (countc[i] >= 4) {
+						if (i == 0 && get_rate(c, x, y, 4, 4, countc) == 0)
+							return MUST_PUT_RATE;
+						if (i == 1 && get_rate(c, x, y, 4, 0, countc) == 0)
+							return MUST_PUT_RATE;
+						if (i == 2 && get_rate(c, x, y, 4, 6, countc) == 0)
+							return MUST_PUT_RATE;
+						if (i == 3 && get_rate(c, x, y, 4, 2, countc) == 0)
+							return MUST_PUT_RATE;
+					}
+					if (countd[i] >= 4) {
+						if (i == 0 && get_rate(d, x, y, 4, 4, countd) == 0)
+							return MUST_PUT_RATE;
+						if (i == 1 && get_rate(d, x, y, 4, 0, countd) == 0)
+							return MUST_PUT_RATE;
+						if (i == 2 && get_rate(d, x, y, 4, 6, countd) == 0)
+							return MUST_PUT_RATE;
+						if (i == 3 && get_rate(d, x, y, 4, 2, countd) == 0)
+							return MUST_PUT_RATE;
+					}
+				}
+				for (int j = 0; j < 8; j+=2) {
+					if (get_rate(c, x, y, 5, j, countc) < 2 || get_rate(d, x, y, 5, j, countd) < 2) {
+						return MUST_PUT_RATE;
+					}
+				}
+			}
 		}
 		return std::max(ratec, rated);	// 自分の石と相手の石で評価値の高い方を返す
 
@@ -629,9 +659,9 @@ public:
 
 SquareState StoneComp::cpu_c = SquareState::black;
 int StoneComp::Level0 = 0;
-const int StoneComp::rate_numw[5] = { 1,  3, 14, 214, 214 };
+const int StoneComp::rate_numw[5] = { 1,  3, 14, 1261, 4233 };
 const int StoneComp::rate_wnumw[5] = { -1, 0, 2, 54, 214 };
-const int StoneComp::rate_numb[5] = { 1,  2, 13, 1060, 4232 };
+const int StoneComp::rate_numb[5] = { 1,  2, 13, 1260, 4232 };
 const int StoneComp::rate_wnumb[5] = { -2, -1,1,13,215 };
 
 
@@ -658,8 +688,8 @@ int StoneComp::compute_sub(int level, SquareState c, int turn) {
 								//いずれかの場所に石があった場合レートを計算
 								if (board[y + i][x + j] == c || board[y + i][x + j] == d) {
 									if (IsSet(x, y, c, ccount) == true) addnext(x, y, c, level);
-									if (level < Level0) {
-										next.back().rate = next.back().compute_sub(level + 1, next_color(c), turn + 1);
+									if (level < Level0 && next.back().rate < MUST_PUT_RATE) {
+										next.back().rate += next.back().compute_sub(level + 1, next_color(c), turn + 1);
 									}
 									//二重ループを抜ける
 									goto bp1;
@@ -678,9 +708,6 @@ int StoneComp::compute_sub(int level, SquareState c, int turn) {
 	}
 	else {//cpuが最初のターンの場合
 		if (IsSet(7, 7, c, ccount) == true)addnext(7, 7, c, level);
-		if (level < Level0) {
-			next.back().rate = next.back().compute_sub(level + 1, next_color(c), turn + 1);
-		}
 	}
 	return std::max_element(next.begin(), next.end())->rate;
 }
@@ -701,7 +728,7 @@ void StoneComp::compute(int level, SquareState c, int& x, int& y, int turn) {
 	x = it->px;
 	y = it->py;
 
-	//Rate_Print();
+	Print << it->rate;
 }
 
 /*
@@ -714,7 +741,7 @@ void StoneComp::compute(int level, SquareState c, int& x, int& y, int turn) {
 bool StoneMng::Compute(SquareState c, int turn, int(&count)[4], Board& desk) {
 	StoneComp cpu(board);
 	int x, y;
-	cpu.compute(0, c, x, y, turn);
+	cpu.compute(2, c, x, y, turn);
 	if (x >= 0 && x < 15 && y >= 0 && y < 15) {
 		if (board.IsSet(x, y, c, count) == true) {			
 			SetandDraw(x, y, c, desk);
